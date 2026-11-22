@@ -1,0 +1,2 @@
+# Windows-only project: check text files out with CRLF line endings, which batch files need.
+* text=auto eol=crlf

@@ -1,0 +1,9 @@
+# build.cmd output
+/out/
+
+# Visual Studio
+.vs/
+*.user
+
+# Recorded traces
+*.etl
