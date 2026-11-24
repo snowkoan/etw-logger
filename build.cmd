@@ -1,5 +1,5 @@
 @echo off
-rem Builds out\EtwLoggerTest.exe with the MSVC command-line tools (x64).
+rem Builds out\etw_logger_test.exe with the MSVC command-line tools (x64).
 rem   build.cmd           Debug build (log messages are also sent to the debugger)
 rem   build.cmd release   Release build
 rem Running this from a Developer Command Prompt skips the slow Visual Studio environment setup.
@@ -37,9 +37,9 @@ if "%CONFIG%"=="Release" (
 
 if not exist out mkdir out
 echo [%TIME%] Compiling %CONFIG% build...
-cl %FLAGS% /Iinclude tests\EtwLoggerTest.cpp /Foout\ /Fdout\ /Feout\EtwLoggerTest.exe /link /DEBUG
+cl %FLAGS% /Iinclude tests\etw_logger_test.cc /Foout\ /Fdout\ /Feout\etw_logger_test.exe /link /DEBUG
 if errorlevel 1 (
     echo [%TIME%] Build failed.
     exit /b 1
 )
-echo [%TIME%] Built out\EtwLoggerTest.exe (%CONFIG%).
+echo [%TIME%] Built out\etw_logger_test.exe (%CONFIG%).

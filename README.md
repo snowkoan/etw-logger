@@ -5,17 +5,16 @@ for Windows) using TraceLogging. You can watch the events live without WPP, mani
 registration step.
 
 ```cpp
-#include "EtwLogger.h"
+#include "etw_logger.h"
 
-int wmain()
-{
-    etwlog::Init();
+int wmain() {
+  etwlog::Init();
 
-    LOG_INFO(L"starting version {}", 3);
-    LOG_ERROR(L"failed to open {} -- error is {}", path, etwlog::Hex(hr));
-    LOG_WARNING_C(L"Net", L"retry {} of {}", attempt, maxAttempts);
+  LOG_INFO(L"starting version {}", 3);
+  LOG_ERROR(L"failed to open {} -- error is {}", path, etwlog::Hex(hr));
+  LOG_WARNING_C(L"Net", L"retry {} of {}", attempt, max_attempts);
 
-    etwlog::Shutdown();
+  etwlog::Shutdown();
 }
 ```
 
@@ -35,13 +34,13 @@ int wmain()
 
 ## Using it in your project
 
-1. Copy `include\EtwLogger.h` into your project, and `tools\watch.cmd` if you want the live viewer.
+1. Copy `include\etw_logger.h` into your project, and `tools\watch.cmd` if you want the live viewer.
 2. Give your app its own provider name. Use the form `Company.Product[.Component]`.
    `tools\setup.ps1` sets the name and its GUID in your header, and sets the name in your
    `watch.cmd`:
 
    ```
-   powershell -ExecutionPolicy Bypass -File tools\setup.ps1 -ProviderName Contoso.MyApp -Header D:\src\MyApp\EtwLogger.h -Watch D:\src\MyApp\watch.cmd
+   powershell -ExecutionPolicy Bypass -File tools\setup.ps1 -ProviderName Contoso.MyApp -Header D:\src\MyApp\etw_logger.h -Watch D:\src\MyApp\watch.cmd
    ```
 
    The GUID is the standard hash of the name, the same one .NET `EventSource` uses. ETW tools
@@ -75,11 +74,11 @@ fields. ETW records the timestamp, process ID and thread ID itself.
 
 ## Settings
 
-Per-app settings are at the top of `EtwLogger.h`:
+Per-app settings are at the top of `etw_logger.h`:
 
 - `ETWLOG_PROVIDER_NAME` and `ETWLOG_PROVIDER_GUID`. Set both with `tools\setup.ps1`.
 - `ETWLOG_DEFAULT_COMPONENT`, the component for `LOG_xxx` calls that don't pass one. The default
-  is `L"App"`. A `.cpp` can use a different default by defining it before the `#include`.
+  is `L"App"`. A source file can use a different default by defining it before the `#include`.
 
 Optional settings can be set there or project-wide with `/D`:
 
@@ -105,7 +104,7 @@ tools\watch.cmd [ProviderName] [Level]
 It prints each event as it arrives, for example:
 
 ```
-11/21/2026-19:50:58.274 BD98.9D2C {"Component":"App","Message":"error message","File":"EtwLoggerTest.cpp","Line":51,"Function":"wmain","meta":{"event":"Error"}}
+11/21/2026-19:50:58.274 BD98.9D2C {"Component":"App","Message":"error message","File":"etw_logger_test.cc","Line":55,"Function":"wmain","meta":{"event":"Error"}}
 ```
 
 The line starts with the time and the process and thread IDs in hex. The event name at the end is
@@ -122,26 +121,40 @@ tracefmt trace.etl -displayonly -nosummary
 
 ## Building the test program
 
-`tests\EtwLoggerTest.cpp` exercises every feature, then logs a heartbeat once a second so there is
-something to watch.
+`tests\etw_logger_test.cc` exercises every feature, then logs a heartbeat once a second so there
+is something to watch.
 
 ```
-build.cmd              Debug build; messages also go to the debugger
-build.cmd release      Release build
-out\EtwLoggerTest.exe  [heartbeat seconds, default 10]
+build.cmd                Debug build; messages also go to the debugger
+build.cmd release        Release build
+out\etw_logger_test.exe  [heartbeat seconds, default 10]
 ```
 
 `build.cmd` sets up the Visual Studio environment itself, which can be slow. Run it from a
 Developer Command Prompt to skip that step.
 
+## Code style
+
+The C++ code follows the [Google C++ Style Guide](https://google.github.io/styleguide/cppguide.html),
+with braces on every control statement and `#pragma once` instead of include guards.
+`.clang-format` enforces the formatting. To reformat:
+
+```
+clang-format -i include\etw_logger.h tests\etw_logger_test.cc
+```
+
+`clang-format` comes with LLVM and with Visual Studio's C++ Clang tools. Visual Studio and the VS
+Code C++ extension also use `.clang-format` when you format a document.
+
 ## Repository layout
 
 ```
-include\EtwLogger.h      the logger
-tools\watch.cmd          live viewer
-tools\setup.ps1          sets the provider name and GUID
-tests\EtwLoggerTest.cpp  test program
-build.cmd                builds the test program into out\
+include\etw_logger.h      the logger
+tools\watch.cmd           live viewer
+tools\setup.ps1           sets the provider name and GUID
+tests\etw_logger_test.cc  test program
+build.cmd                 builds the test program into out\
+.clang-format             C++ formatting rules
 ```
 
 ## License

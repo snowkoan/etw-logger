@@ -1,12 +1,12 @@
 @echo off
-rem Shows EtwLogger events live in this console, using tracelog and tracefmt from the
+rem Shows etw-logger events live in this console, using tracelog and tracefmt from the
 rem Windows SDK. Run it from an elevated prompt.
 rem
 rem   watch.cmd [ProviderName] [Level]
 rem
 rem   Level: 1=Critical 2=Error 3=Warning 4=Info 5=Verbose (default)
 rem
-rem PER-APP: PROVIDER must match ETWLOG_PROVIDER_NAME in EtwLogger.h; setup.ps1 sets both.
+rem PER-APP: PROVIDER must match ETWLOG_PROVIDER_NAME in etw_logger.h; setup.ps1 sets both.
 setlocal
 set "PROVIDER=MyCompany.MyApp"
 set "LEVEL=5"

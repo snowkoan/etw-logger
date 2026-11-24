@@ -1,0 +1,13 @@
+# Google C++ style: https://google.github.io/styleguide/cppguide.html
+BasedOnStyle: Google
+
+# Braces on every if, else, for, while and do, even around a single statement.
+InsertBraces: true
+
+# When a call doesn't fit on one line, put each argument on its own line.
+BinPackArguments: false
+
+# Leave #include order alone: Windows headers depend on the order they're
+# included in (for example, <windows.h> must come before
+# <TraceLoggingProvider.h>).
+SortIncludes: Never

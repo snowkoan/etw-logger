@@ -1,15 +1,15 @@
 <#
 .SYNOPSIS
-Sets the ETW provider name in EtwLogger.h, regenerates the matching provider GUID, and sets the
+Sets the ETW provider name in etw_logger.h, regenerates the matching provider GUID, and sets the
 same name in watch.cmd.
 
 .DESCRIPTION
 Updates the files passed with -Header and -Watch, normally your app's copies. With neither, it
-updates include\EtwLogger.h and tools\watch.cmd in this repository.
+updates include\etw_logger.h and tools\watch.cmd in this repository.
 
 .EXAMPLE
-powershell -ExecutionPolicy Bypass -File tools\setup.ps1 -ProviderName Contoso.MyApp -Header D:\src\MyApp\EtwLogger.h -Watch D:\src\MyApp\watch.cmd
-Updates your app's copies of EtwLogger.h and watch.cmd.
+powershell -ExecutionPolicy Bypass -File tools\setup.ps1 -ProviderName Contoso.MyApp -Header D:\src\MyApp\etw_logger.h -Watch D:\src\MyApp\watch.cmd
+Updates your app's copies of etw_logger.h and watch.cmd.
 
 .EXAMPLE
 powershell -ExecutionPolicy Bypass -File tools\setup.ps1 -ProviderName Contoso.MyApp
@@ -20,7 +20,7 @@ param(
     [ValidatePattern('^[A-Za-z0-9][A-Za-z0-9._-]*$')]
     [string] $ProviderName,
 
-    # A copy of EtwLogger.h to update.
+    # A copy of etw_logger.h to update.
     [string] $Header,
 
     # A copy of watch.cmd to update.
@@ -31,7 +31,7 @@ $ErrorActionPreference = 'Stop'
 
 if (-not $Header -and -not $Watch)
 {
-    $Header = Join-Path $PSScriptRoot '..\include\EtwLogger.h'
+    $Header = Join-Path $PSScriptRoot '..\include\etw_logger.h'
     $Watch = Join-Path $PSScriptRoot 'watch.cmd'
 }
 
@@ -67,7 +67,8 @@ if ($Header)
     $updates[$file] = Get-EditedText $file ([ordered]@{
         '(?m)^#define ETWLOG_PROVIDER_NAME "[^"]*"'   = "#define ETWLOG_PROVIDER_NAME `"$ProviderName`""
         '(?m)^// \{[0-9a-fA-F-]{36}\}'                = "// {$guid}"
-        '(?m)^#define ETWLOG_PROVIDER_GUID \([^)]*\)' = "#define ETWLOG_PROVIDER_GUID $cGuid"
+        # Keeps whatever comes between the name and the value, such as a line continuation.
+        '(?m)^(#define ETWLOG_PROVIDER_GUID\s*\\?\s*)\([^)]*\)' = "`${1}$cGuid"
     })
 }
 if ($Watch)
